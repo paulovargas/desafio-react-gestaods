@@ -1,3 +1,5 @@
+/* eslint-disable no-lone-blocks */
+/* eslint-disable react/style-prop-object */
 /* eslint-disable no-sequences */
 /* eslint-disable no-unused-expressions */
 import axios from "axios";
@@ -7,13 +9,21 @@ import styled from "styled-components";
 import { Box, Flex } from "rebass";
 import logoImage from "../../assets/imgs/logo.png";
 import deleteImage from "../../assets/imgs/Group 137.png";
-//import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
+import avatar from "../../assets/imgs/avatar.png";
 
 const headerProps = {
   list: [],
 };
+
+const StyledModal = styled.div`
+  width: auto;
+  height: auto;
+  top: 58px;
+  left: 117px;
+  border-radius: 10px;
+`;
 
 const StyledLogo = styled.img`
   width: 230px;
@@ -35,12 +45,32 @@ const StyledContainer = styled.div`
 `;
 
 const StyledTable = styled.div`
-  display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin: 25px;
-  margin-right: 70px;
+  //margin-right: 70px;
+`;
+
+const StyledAvatar = styled.img`
+  width: 67.62px;
+  height: 67.62px;
+  top: 153px;
+  left: 136px;
+  justify-content: center;
+`;
+const StyledElipse = styled.div`
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 125px;
+  height: 125px;
+  top: 153px;
+  left: 136px;
+  border-radius: 50%;
+  background: #d9d9d9;
 `;
 
 const StyledPage = styled.div``;
@@ -49,7 +79,6 @@ const baseUrlCidades = "https://6282b7eb92a6a5e46218f315.mockapi.io/cidades";
 //const baseUrlCidades = "http://localhost:3001/cidades";
 
 const baseUrl = "https://6588390d90fa4d3dabf9a00f.mockapi.io/patients";
-//const baseUrl = "http://localhost:3001/pacientes";
 
 const initialState = {
   paciente: {
@@ -112,6 +141,36 @@ export default class PacienteCrud extends Component {
     newPaciente: false,
     crudMode: "add",
     modalTitle: "",
+    labelBasic: "#510972",
+    labelContact: "",
+  };
+
+  searchCep = async () => {
+    const { cep } = this.state.paciente;
+
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      const { data } = response;
+
+      if (!data.erro) {
+        const { logradouro, bairro, localidade, uf } = data;
+
+        // Atualiza os campos de endereço no estado
+        this.setState((prevState) => ({
+          paciente: {
+            ...prevState.paciente,
+            endereco: logradouro,
+            bairro: bairro,
+            cidade: localidade,
+            uf: uf,
+          },
+        }));
+      } else {
+        window.alert("CEP não encontrado");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar CEP", error);
+    }
   };
 
   componentWillMount() {
@@ -129,6 +188,10 @@ export default class PacienteCrud extends Component {
 
   handleCloseModal = () => {
     this.setState({ showModal: false });
+    this.setState({
+      labelBasic: "#510972",
+      labelContact: "",
+    })
   };
 
   clear() {
@@ -149,9 +212,6 @@ export default class PacienteCrud extends Component {
       this.setState({ paciente: initialState.paciente, list });
     });
     this.handleCloseModal();
-    //this.setState({ stageBasic: !this.state.stageBasic });
-    //this.setState({ mostraCadastrar: !this.state.mostraCadastrar });
-    //this.setState({ mostraLista: !this.state.mostraLista });
   }
 
   getUpdatedList(paciente, add = true) {
@@ -176,8 +236,8 @@ export default class PacienteCrud extends Component {
     var pacientes = listaPacientes;
     function buscarPaciente(listaPacientes) {
       if (
-        listaPacientes.nomePaciente.toLowerCase().includes(pesqPaciente) ||
-        listaPacientes.codPaciente.includes(pesqPaciente)
+        listaPacientes.paciente.toLowerCase().includes(pesqPaciente) ||
+        listaPacientes.cpf.includes(pesqPaciente)
       ) {
         return listaPacientes;
       }
@@ -189,37 +249,37 @@ export default class PacienteCrud extends Component {
     }
   }
 
-  botaoCadastro() {
+  botaoCadastro() {   
     return (
-      <div className="row col-12 my-5">
-        <div className="col-6">
-          <label htmlFor="">Listagem de pacientes</label>
-        </div>
+      <div className="row col-12 mt-5 flex-md-row flex-md-column justify-content-center">
+        <div className="row ali">
+          <div className="col-md-6 mt-3">
+            <label htmlFor="">Listagem de pacientes</label>
+          </div>
+          <div className="col-md-6 d-grid gap-2 d-md-flex justity-content-end">
+            <input
+              type="text"
+              className="form-control my-3"
+              value={this.pesqPaciente}
+              onChange={(e) => this.setBusca(e.target.value)}
+              placeholder="Pesquisar"
+            />
 
-        <div className="d-flex col-6 justify-content-end">
-          <input
-            type="text"
-            className="form-control"
-            value={this.pesqPaciente}
-            onChange={(e) => this.setBusca(e.target.value)}
-            placeholder="Pesquisar"
-          />
-          <button
-            className="btn btn-primary mx-2"
-            onClick={() =>
-              this.setState({
-                stageBasic: true,
-                //mostraLista: !this.state.mostraLista,
-                //mostraCadastrar: !this.state.mostraCadastrar,
-                //newPaciente: !this.state.newPaciente,
-                showModal: true,
-                crudMode: "add",
-                modalTitle: "",
-              })
-            }
-          >
-            Adicionar paciente
-          </button>
+            <button
+              className="btn btn-primary my-3"
+              onClick={() =>
+                this.setState({
+                  stageBasic: true,
+                  stageContact: false,
+                  showModal: true,
+                  crudMode: "add",
+                  modalTitle: "",
+                })
+              }
+            >
+              Adicionar paciente
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -246,17 +306,20 @@ export default class PacienteCrud extends Component {
 
   renderForm() {
     return (
-      <div className="form">
+      <div className="form" style={{ maxWidth: "800px" }}>
         {this.state.stageBasic || this.state.stageContact ? (
           <div className="row">
-            <div className="col-12">
+            <div className="col-12 col-md-6">
               <div className="form-group">
                 <label
-                  className="mx-2"
+                  className="col-form-label"
+                  style={{ color: this.state.labelBasic }}
                   onClick={() =>
                     this.setState({
                       stageBasic: true,
                       stageContact: false,
+                      labelBasic: "#510972",
+                      labelContact: "",
                     })
                   }
                 >
@@ -264,10 +327,13 @@ export default class PacienteCrud extends Component {
                 </label>
                 <label
                   className="mx-2"
+                  style={{ color: this.state.labelContact }}
                   onClick={() =>
                     this.setState({
                       stageBasic: false,
                       stageContact: true,
+                      labelBasic: "",
+                      labelContact: "#510972",
                     })
                   }
                 >
@@ -275,23 +341,24 @@ export default class PacienteCrud extends Component {
                 </label>
               </div>
             </div>
+            <hr />
           </div>
         ) : (
+          ///  Imagem
+
           ""
         )}
 
         {this.state.stageBasic ? (
           <div className="row">
-            <div className="col-12">
-              <div className="form-group">
-                {/* <label className="mx-2">Informações básicas </label>
-                <label className="mx-2">___________________ </label> */}
-              </div>
+            <div>
+              <StyledElipse>
+                <StyledAvatar src={avatar} alt="Logo" />
+              </StyledElipse>
             </div>
-
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Paciente</label>
+                <label className="col-form-label">Paciente</label>
                 <input
                   type="text"
                   className="form-control"
@@ -304,7 +371,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Apelido</label>
+                <label className="col-form-label">Apelido</label>
                 <input
                   type="text"
                   className="form-control"
@@ -318,7 +385,7 @@ export default class PacienteCrud extends Component {
 
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Nacionalidade</label>
+                <label className="col-form-label">Nacionalidade</label>
 
                 <input
                   type="text"
@@ -332,7 +399,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Nascimento</label>
+                <label className="col-form-label">Nascimento</label>
 
                 <input
                   type="date"
@@ -346,7 +413,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>CPF</label>
+                <label className="col-form-label">CPF</label>
                 <input
                   type="text"
                   className="form-control"
@@ -359,7 +426,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>RG</label>
+                <label className="col-form-label">RG</label>
 
                 <input
                   type="text"
@@ -373,7 +440,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Gênero</label>
+                <label className="col-form-label">Gênero</label>
                 <select
                   type="text"
                   className="form-control"
@@ -396,7 +463,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Estado civil</label>
+                <label className="col-form-label">Estado civil</label>
                 <select
                   type="text"
                   className="form-control"
@@ -416,7 +483,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-12">
               <div className="form-group">
-                <label>Observações adicionais</label>
+                <label className="col-form-label">Observações adicionais</label>
 
                 <textarea
                   type="text"
@@ -448,20 +515,29 @@ export default class PacienteCrud extends Component {
 
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>CEP</label>
+                <label className="col-form-label">CEP</label>
                 <input
                   type="text"
                   className="form-control"
                   name="cep"
                   value={this.state.paciente.cep}
                   onChange={(e) => this.updateField(e)}
+                  onBlur={this.searchCep} // Adicione isso para acionar a busca do CEP
                   placeholder="Digite"
                 />
+                {/* <input
+                  type="text"
+                  className="form-control"
+                  name="cep"
+                  value={this.state.paciente.cep}
+                  onChange={(e) => this.updateField(e)}
+                  placeholder="Digite"
+                /> */}
               </div>
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Cidade</label>
+                <label className="col-form-label">Cidade</label>
                 <input
                   type="text"
                   className="form-control"
@@ -475,7 +551,7 @@ export default class PacienteCrud extends Component {
 
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>UF</label>
+                <label className="col-form-label">UF</label>
 
                 <input
                   type="text"
@@ -489,7 +565,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Endereço</label>
+                <label className="col-form-label">Endereço</label>
 
                 <input
                   type="text"
@@ -503,7 +579,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Número</label>
+                <label className="col-form-label">Número</label>
                 <input
                   type="text"
                   className="form-control"
@@ -516,7 +592,7 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Bairro</label>
+                <label className="col-form-label">Bairro</label>
 
                 <input
                   type="text"
@@ -530,13 +606,27 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-12 col-md-4">
               <div className="form-group">
-                <label>Complemento</label>
+                <label className="col-form-label">Complemento</label>
 
                 <input
                   type="text"
                   className="form-control"
                   name="complemento"
                   value={this.state.paciente.complemento}
+                  onChange={(e) => this.updateField(e)}
+                  placeholder="Digite"
+                />
+              </div>
+            </div>
+            <div className="col-12 col-md-4">
+              <div className="form-group">
+                <label className="col-form-label">Email</label>
+
+                <input
+                  type="text"
+                  className="form-control"
+                  name="email"
+                  value={this.state.paciente.email}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
                 />
@@ -553,9 +643,10 @@ export default class PacienteCrud extends Component {
 
         <div className="row">
           {this.state.stageBasic || this.state.stageContact ? (
-            <div className="col-12 d-flex justify-content-end p-5">
+            <div className="col-12 d-flex justify-content-end mt-5 p-3">
               <button
                 className="btn btn-primary"
+                style={{ width: "200px" }}
                 onClick={() => {
                   this.state.stageBasic
                     ? this.setState({
@@ -575,6 +666,7 @@ export default class PacienteCrud extends Component {
       </div>
     );
   }
+
   renderDel() {
     return (
       <div className="form">
@@ -593,311 +685,23 @@ export default class PacienteCrud extends Component {
             <div className="col-12 d-flex justify-content-end">
               <button
                 className="btn btn-outline-primary mx-3"
-                onClick={() => { this.handleCloseModal()}}
+                onClick={() => {
+                  this.handleCloseModal();
+                }}
               >
                 Cancelar
               </button>
               <button
                 className="btn btn-danger"
-                onClick={() => { this.remove(this.state.paciente)}}
+                onClick={() => {
+                  this.remove(this.state.paciente);
+                }}
               >
                 Excluir
               </button>
             </div>
           </div>
         </div>
-        {/*  {this.state.stageBasic || this.state.stageContact ? (
-          <div className="row">
-            <div className="col-12">
-              <div className="form-group">
-                <label
-                  className="mx-2"
-                  onClick={() =>
-                    this.setState({
-                      stageBasic: !this.state.stageBasic,
-                      stageContact: !this.state.stageContact,
-                    })
-                  }
-                >
-                  Informações básicas{" "}
-                </label>
-                <label
-                  className="mx-2"
-                  onClick={() =>
-                    this.setState({
-                      stageBasic: !this.state.stageBasic,
-                      stageContact: !this.state.stageContact,
-                    })
-                  }
-                >
-                  Contato{" "}
-                </label>
-              </div>
-            </div>
-          </div>
-        ) : (
-          ""
-        )} */}
-
-        {/* {this.state.stageBasic ? (
-          <div className="row">
-            <div className="col-12">
-              <div className="form-group">
-                <label className="mx-2">Informações básicas </label>
-                <label className="mx-2">___________________ </label>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Paciente</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="paciente"
-                  value={this.state.paciente.paciente}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Apelido</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="apelido"
-                  value={this.state.paciente.apelido}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Nacionalidade</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="nacionalidade"
-                  value={this.state.paciente.nacionalidade}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Nascimento</label>
-
-                <input
-                  type="date"
-                  className="form-control"
-                  name="dataNascimento"
-                  value={this.state.paciente.dataNascimento}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>CPF</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="cpf"
-                  value={this.state.paciente.cpf}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>RG</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="rg"
-                  value={this.state.paciente.rg}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Gênero</label>
-                <select
-                  type="text"
-                  className="form-control"
-                  name="genero"
-                  value={this.state.paciente.genero}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                >
-                  <option selected>Sem filtro</option>
-                  <option>...</option>
-                </select>
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Estado civil</label>
-                <select
-                  type="text"
-                  className="form-control"
-                  name="estadoCivil"
-                  value={this.state.paciente.estadoCivil}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                >
-                  <option selected>Sem filtro</option>
-                  <option>...</option>
-                </select>
-              </div>
-            </div>
-            <div className="col-12 col-md-12">
-              <div className="form-group">
-                <label>Observações adicionais</label>
-
-                <textarea
-                  type="text"
-                  className="form-control"
-                  name="bairro"
-                  value={this.state.paciente.infoAdic}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-
-            <div className="col-12 col-md-6">
-              <div className="form-group"></div>
-            </div>
-          </div>
-        ) : (
-          ""
-        )} */}
-
-        {/*  {this.state.stageContact ? (
-          <div className="row">
-            <div className="col-12">
-              <div className="form-group">
-                <label className="mx-2">Contato </label>
-                <label className="mx-2">_______ </label>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>CEP</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="codCliente"
-                  value={this.state.paciente.cep}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Cidade</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="codCliente"
-                  value={this.state.paciente.cidade}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>UF</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="nomeCliente"
-                  value={this.state.paciente.uf}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Endereço</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="dataNascimento"
-                  value={this.state.paciente.endereco}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Número</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="numEnde"
-                  value={this.state.paciente.numero}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Bairro</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="bairro"
-                  value={this.state.paciente.bairro}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-md-4">
-              <div className="form-group">
-                <label>Complemento</label>
-
-                <input
-                  type="text"
-                  className="form-control"
-                  name="bairro"
-                  value={this.state.paciente.complemento}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                />
-              </div>
-            </div>
-
-            <div className="col-12 col-md-6">
-              <div className="form-group"></div>
-            </div>
-          </div>
-        ) : (
-          ""
-        )} */}
 
         <div className="row">
           {this.state.stageBasic || this.state.stageContact ? (
@@ -914,20 +718,15 @@ export default class PacienteCrud extends Component {
                 }}
               >
                 Excluir
-                {/* {this.state.stageContact ? "Salvar" : "Próximo"} */}
               </button>
             </div>
           ) : (
             <div></div>
           )}
-          {/* {this.state.mostraLista ? this.renderTable() : ""} */}
-          {/* {this.state.mostraListaCidades ? this.renderTableCidades() : ""} */}
         </div>
       </div>
     );
   }
-
-  //Modal Informações
 
   verificaCodigo() {
     const novoCod = this.state.paciente.codPaciente;
@@ -935,13 +734,9 @@ export default class PacienteCrud extends Component {
     for (let i = 0; i < listaPacientes.length; ++i) {
       if (novoCod === listaPacientes[i].codPaciente) {
         this.setState({ resVerifica: false });
-
-        //this.state.resVerifica = false;
         i = listaPacientes.length;
         window.alert("Existe outro paciente com esse código");
-      }
-      //else this.state.resVerifica = true;
-      else this.setState({ resVerifica: false });
+      } else this.setState({ resVerifica: false });
     }
     this.save();
   }
@@ -949,6 +744,11 @@ export default class PacienteCrud extends Component {
   load(paciente) {
     this.setState({ crudMode: "edit" });
     this.setState({ modalTitle: "" });
+    this.setState({ stageBasic: true }),
+      this.setState({ stageContact: false }),
+      this.setState({ newPaciente: false }),
+      this.setState({ mostraLista: false }),
+      this.setState({ paciente });
 
     const listaCidades = this.state.listCidades;
 
@@ -961,20 +761,13 @@ export default class PacienteCrud extends Component {
     cidadePaciente.forEach((e) => {
       e;
       this.setState({ cidadePaciente: e });
-      //this.state.cidadePaciente = e;
     });
 
-    this.setState({ stageBasic: true }),
-      this.setState({ newPaciente: false }),
-      this.setState({ mostraLista: false }),
-      //this.setState({ mostraCadastrar: false }),
-      this.setState({ paciente });
     this.handleOpenModal();
   }
 
   loadCidade(cidade) {
     this.setState({ cidadePaciente: cidade });
-    //this.state.cidadePaciente = cidade;
     this.setState({
       stageBasic: !this.state.stageBasic,
       mostraListaCidades: !this.state.mostraListaCidades,
@@ -982,24 +775,17 @@ export default class PacienteCrud extends Component {
   }
 
   remove(paciente) {
-    /* this.setState({ crudMode: 'delet' });
-    this.handleOpenModal(); */
     axios.delete(`${baseUrl}/${paciente.id}`).then((resp) => {
       const list = this.getUpdatedList(paciente, false);
-
       this.setState({ list });
     });
   }
+
   modalDelet(paciente) {
     this.setState({ paciente });
     this.setState({ crudMode: "delet" });
     this.setState({ modalTitle: "Excluir paciente ?" });
     this.handleOpenModal();
-    /* axios.delete(`${baseUrl}/${paciente.id}`).then((resp) => {
-      const list = this.getUpdatedList(paciente, false);
-
-      this.setState({ list });
-    }); */
   }
 
   renderTableCidades() {
@@ -1017,22 +803,33 @@ export default class PacienteCrud extends Component {
       </table>
     );
   }
+
   renderTable() {
     return (
-      <div>
+      <div className="table-responsive">
         {this.state.mostraCadastrar ? this.botaoCadastro() : ""}
 
-        <table className="table mt-3 mx-5">
+        <table className="table">
           <thead>
             <tr>
-              <th scope="col">Nome</th>
-              <th scope="col">CPF</th>
-              <th scope="col">Data de Nascimento</th>
-              <th scope="col">Email</th>
-              <th scope="col">Cidade</th>
-              <th scope="col">Ações</th>
-              <th scope="col"></th>
-              <th scope="col"></th>
+              <th className="d-none d-md-table-cell" scope="col">
+                Nome
+              </th>
+              <th className="d-none d-md-table-cell" scope="col">
+                CPF
+              </th>
+              <th className="d-none d-md-table-cell" scope="col">
+                Data de Nascimento
+              </th>
+              <th className="d-none d-md-table-cell" scope="col">
+                Email
+              </th>
+              <th className="d-none d-md-table-cell" scope="col">
+                Cidade
+              </th>
+              <th className="d-none d-md-table-cell" scope="col">
+                Ações
+              </th>
             </tr>
           </thead>
           <tbody>{this.renderRows()}</tbody>
@@ -1045,11 +842,11 @@ export default class PacienteCrud extends Component {
     return this.state.list.map((paciente) => {
       return (
         <tr key={paciente.id}>
-          <td>{paciente.paciente}</td>
-          <td>{paciente.cpf}</td>
-          <td>{paciente.dataNascimento}</td>
-          <td>{paciente.email}</td>
-          <td>{paciente.cidade}</td>
+          <td className="d-sm-table-cell">{paciente.paciente}</td>
+          <td className="d-none d-md-table-cell">{paciente.cpf}</td>
+          <td className="d-none d-md-table-cell">{paciente.dataNascimento}</td>
+          <td className="d-none d-md-table-cell">{paciente.email}</td>
+          <td className="d-none d-md-table-cell">{paciente.cidade}</td>
 
           <td>
             <button
@@ -1092,23 +889,26 @@ export default class PacienteCrud extends Component {
             <StyledContainer>
               <StyledPage>
                 <StyledTable>{this.renderTable()}</StyledTable>
-                <Modal
-                  show={this.state.showModal}
-                  onHide={this.handleCloseModal}
-                >
-                  <Modal.Header closeButton>
-                    <Modal.Title>{this.state.modalTitle}</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {this.state.crudMode === "add" ? this.renderForm() : ""}
-                    {this.state.crudMode === "edit" ? this.renderForm() : ""}
-                    {this.state.crudMode === "delet" ? this.renderDel() : ""}
-                    {this.state.crudMode === "delet"
-                      ? //<StyledImgDel src={deleteImage} alt="Deletar"/>
-                        ""
-                      : ""}
-                  </Modal.Body>
-                </Modal>
+                <StyledModal>
+                  <Modal
+                    show={this.state.showModal}
+                    onHide={this.handleCloseModal}
+                    dialogClassName="modal-lg"
+                  >
+                    <Modal.Header closeButton>
+                      <Modal.Title>{this.state.modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {this.state.crudMode === "add" ? this.renderForm() : ""}
+                      {this.state.crudMode === "edit" ? this.renderForm() : ""}
+                      {this.state.crudMode === "delet" ? this.renderDel() : ""}
+                      {this.state.crudMode === "delet"
+                        ? //<StyledImgDel src={deleteImage} alt="Deletar"/>
+                          ""
+                        : ""}
+                    </Modal.Body>
+                  </Modal>
+                </StyledModal>
               </StyledPage>
             </StyledContainer>
           </Box>
