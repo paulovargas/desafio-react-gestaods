@@ -12,10 +12,55 @@ import deleteImage from "../../assets/imgs/Group 137.png";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import avatar from "../../assets/imgs/avatar.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightArrowLeft, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const headerProps = {
   list: [],
 };
+
+const StyledHead = styled.div`
+  width: auto;
+  //display: flex;
+  //flex-direction: row;
+  //justify-content: end;
+  //align-content: center;
+  //margin-right: 70px;
+  //padding: 30px;
+  //border: 1px solid #ccc;
+`;
+
+const StyledSearch = styled.div`
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 5px;
+
+  input {
+    border: none;
+    outline: none;
+    margin-left: 15px;
+  }
+  //display: flex;
+  //flex-direction: row;
+  //justify-content: center;
+  //justify-items: center;
+  //align-content: center;
+  //border: 1px solid #ccc;
+  //margin-right: 70px;
+  //border-radius: 5%;
+  //margin-left: 10px;
+  //padding: 5px;
+`;
+
+/* const StyledInput = styled.input`
+  border: none;
+  outline: none;
+  justify-content: end;
+  margin-left: 10px;
+  justify-items: center;
+  align-itens: center;
+`; */
 
 const StyledModal = styled.div`
   width: auto;
@@ -59,6 +104,7 @@ const StyledAvatar = styled.img`
   left: 136px;
   justify-content: center;
 `;
+
 const StyledElipse = styled.div`
   margin-top: 15px;
   margin-bottom: 15px;
@@ -74,9 +120,6 @@ const StyledElipse = styled.div`
 `;
 
 const StyledPage = styled.div``;
-
-const baseUrlCidades = "https://6282b7eb92a6a5e46218f315.mockapi.io/cidades";
-//const baseUrlCidades = "http://localhost:3001/cidades";
 
 const baseUrl = "https://6588390d90fa4d3dabf9a00f.mockapi.io/patients";
 
@@ -143,6 +186,8 @@ export default class PacienteCrud extends Component {
     modalTitle: "",
     labelBasic: "#510972",
     labelContact: "",
+    basicBold: "bold",
+    contactBold: "",
   };
 
   searchCep = async () => {
@@ -169,16 +214,13 @@ export default class PacienteCrud extends Component {
         window.alert("CEP não encontrado");
       }
     } catch (error) {
-      console.error("Erro ao buscar CEP", error);
+      window.alert("Erro ao buscar CEP", error);
     }
   };
 
   componentWillMount() {
     axios(baseUrl).then((resp) => {
       this.setState({ list: resp.data });
-    });
-    axios(baseUrlCidades).then((resp) => {
-      this.setState({ listCidades: resp.data });
     });
   }
 
@@ -191,7 +233,10 @@ export default class PacienteCrud extends Component {
     this.setState({
       labelBasic: "#510972",
       labelContact: "",
-    })
+      basicBold: "bold",
+      contactBold: "",
+    });
+    this.clear();
   };
 
   clear() {
@@ -225,6 +270,7 @@ export default class PacienteCrud extends Component {
     paciente[event.target.name] = event.target.value;
     this.setState({ paciente });
   }
+  
   updateProgress = (field, val) => {
     this.setState({ [field]: val });
   };
@@ -249,39 +295,47 @@ export default class PacienteCrud extends Component {
     }
   }
 
-  botaoCadastro() {   
+  botaoCadastro() {
     return (
-      <div className="row col-12 mt-5 flex-md-row flex-md-column justify-content-center">
-        <div className="row ali">
-          <div className="col-md-6 mt-3">
-            <label htmlFor="">Listagem de pacientes</label>
-          </div>
-          <div className="col-md-6 d-grid gap-2 d-md-flex justity-content-end">
-            <input
-              type="text"
-              className="form-control my-3"
-              value={this.pesqPaciente}
-              onChange={(e) => this.setBusca(e.target.value)}
-              placeholder="Pesquisar"
-            />
-
-            <button
-              className="btn btn-primary my-3"
-              onClick={() =>
-                this.setState({
-                  stageBasic: true,
-                  stageContact: false,
-                  showModal: true,
-                  crudMode: "add",
-                  modalTitle: "",
-                })
-              }
-            >
-              Adicionar paciente
-            </button>
+      <StyledHead>
+        <div className="row col-12 mt-5 flex-md-row flex-md-column justify-content-center">
+          <div className="row ali">
+            <div className="col-md-6 my-3">
+              <label htmlFor="">Listagem de pacientes</label>
+            </div>
+            <div className="col-md-6 d-grid d-md-flex justity-content-end">
+              <StyledSearch>
+                <FontAwesomeIcon icon={faSearch} style={{ marginLeft: '15px' }} />
+                <input
+                type="text"
+                className="form-control border-0 my-3"
+                value={this.pesqPaciente}
+                onChange={(e) => this.setBusca(e.target.value)}
+                placeholder="Pesquisar"
+              />               
+              </StyledSearch>              
+              <div className="d-flex justify-content-between">
+              <button
+                className="btn btn-primary mx-3 my-3"
+                onClick={() =>
+                  this.setState({
+                    stageBasic: true,
+                    stageContact: false,
+                    showModal: true,
+                    crudMode: "add",
+                    modalTitle: "",
+                    newPaciente: true,
+                  })
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="mx-2"/>
+                Adicionar paciente
+              </button>
+              </div>              
+            </div>
           </div>
         </div>
-      </div>
+      </StyledHead>
     );
   }
 
@@ -313,13 +367,18 @@ export default class PacienteCrud extends Component {
               <div className="form-group">
                 <label
                   className="col-form-label"
-                  style={{ color: this.state.labelBasic }}
+                  style={{
+                    color: this.state.labelBasic,
+                    fontWeight: this.state.basicBold,
+                  }}
                   onClick={() =>
                     this.setState({
                       stageBasic: true,
                       stageContact: false,
                       labelBasic: "#510972",
                       labelContact: "",
+                      basicBold: "bold",
+                      contactBold: "",
                     })
                   }
                 >
@@ -327,13 +386,18 @@ export default class PacienteCrud extends Component {
                 </label>
                 <label
                   className="mx-2"
-                  style={{ color: this.state.labelContact }}
+                  style={{
+                    color: this.state.labelContact,
+                    fontWeight: this.state.contactBold,
+                  }}
                   onClick={() =>
                     this.setState({
                       stageBasic: false,
                       stageContact: true,
                       labelBasic: "",
                       labelContact: "#510972",
+                      basicBold: "",
+                      contactBold: "bold",
                     })
                   }
                 >
@@ -344,8 +408,6 @@ export default class PacienteCrud extends Component {
             <hr />
           </div>
         ) : (
-          ///  Imagem
-
           ""
         )}
 
@@ -507,10 +569,7 @@ export default class PacienteCrud extends Component {
         {this.state.stageContact ? (
           <div className="row">
             <div className="col-12">
-              <div className="form-group">
-                {/* <label className="mx-2">Contato </label>
-                <label className="mx-2">_______ </label> */}
-              </div>
+              <div className="form-group"></div>
             </div>
 
             <div className="col-12 col-md-4">
@@ -522,17 +581,9 @@ export default class PacienteCrud extends Component {
                   name="cep"
                   value={this.state.paciente.cep}
                   onChange={(e) => this.updateField(e)}
-                  onBlur={this.searchCep} // Adicione isso para acionar a busca do CEP
+                  onBlur={this.searchCep}
                   placeholder="Digite"
                 />
-                {/* <input
-                  type="text"
-                  className="form-control"
-                  name="cep"
-                  value={this.state.paciente.cep}
-                  onChange={(e) => this.updateField(e)}
-                  placeholder="Digite"
-                /> */}
               </div>
             </div>
             <div className="col-12 col-md-4">
@@ -652,6 +703,10 @@ export default class PacienteCrud extends Component {
                     ? this.setState({
                         stageBasic: false,
                         stageContact: true,
+                        labelBasic: "",
+                        labelContact: "#510972",
+                        basicBold: "",
+                        contactBold: "bold",
                       })
                     : this.salvaDados();
                 }}
@@ -671,10 +726,10 @@ export default class PacienteCrud extends Component {
     return (
       <div className="form">
         <div className="col-12">
-          <div className="text-center">
+          <div className="text-center d-flex flex-column align-items-center">
             <StyledImgDel src={deleteImage} alt="Deletar" />
             <label className="text-center mt-5 my-1">
-              Tem certeza que deseja excluir o paciente selecionado ?
+              Tem certeza que deseja excluir o paciente selecionado?
             </label>
             <label className="text-center fw-bold my-4">
               Essa ação não poderá ser desfeita.
@@ -701,28 +756,6 @@ export default class PacienteCrud extends Component {
               </button>
             </div>
           </div>
-        </div>
-
-        <div className="row">
-          {this.state.stageBasic || this.state.stageContact ? (
-            <div className="col-12 d-flex justify-content-end p-5">
-              <button
-                className="btn btn-danger"
-                onClick={() => {
-                  this.state.stageBasic
-                    ? this.setState({
-                        stageBasic: !this.state.stageBasic,
-                        stageContact: !this.state.stageContact,
-                      })
-                    : (e) => this.salvaDados(e);
-                }}
-              >
-                Excluir
-              </button>
-            </div>
-          ) : (
-            <div></div>
-          )}
         </div>
       </div>
     );
@@ -779,6 +812,7 @@ export default class PacienteCrud extends Component {
       const list = this.getUpdatedList(paciente, false);
       this.setState({ list });
     });
+    this.handleCloseModal();
   }
 
   modalDelet(paciente) {
@@ -811,24 +845,39 @@ export default class PacienteCrud extends Component {
 
         <table className="table">
           <thead>
+          <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>           
             <tr>
-              <th className="d-none d-md-table-cell" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Nome
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-              <th className="d-none d-md-table-cell" scope="col">
+              
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 CPF
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-              <th className="d-none d-md-table-cell" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Data de Nascimento
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-              <th className="d-none d-md-table-cell" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Email
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-              <th className="d-none d-md-table-cell" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Cidade
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-              <th className="d-none d-md-table-cell" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Ações
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
             </tr>
           </thead>
@@ -896,16 +945,13 @@ export default class PacienteCrud extends Component {
                     dialogClassName="modal-lg"
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title>{this.state.modalTitle}</Modal.Title>
+                      <Modal.Title color="#510972">{this.state.modalTitle}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       {this.state.crudMode === "add" ? this.renderForm() : ""}
                       {this.state.crudMode === "edit" ? this.renderForm() : ""}
                       {this.state.crudMode === "delet" ? this.renderDel() : ""}
-                      {this.state.crudMode === "delet"
-                        ? //<StyledImgDel src={deleteImage} alt="Deletar"/>
-                          ""
-                        : ""}
+                      {this.state.crudMode === "delet" ? "" : ""}
                     </Modal.Body>
                   </Modal>
                 </StyledModal>
