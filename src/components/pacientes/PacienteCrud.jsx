@@ -1,3 +1,4 @@
+/* eslint-disable no-sequences */
 /* eslint-disable no-unused-expressions */
 import axios from "axios";
 import React, { Component } from "react";
@@ -5,7 +6,8 @@ import Main from "../template/Main";
 import styled from "styled-components";
 import { Box, Flex } from "rebass";
 import logoImage from "../../assets/imgs/logo.png";
-import Button from "react-bootstrap/Button";
+import deleteImage from "../../assets/imgs/Group 137.png";
+//import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -16,6 +18,13 @@ const headerProps = {
 const StyledLogo = styled.img`
   width: 230px;
   height: 185px;
+  display: block; /* Remove espaços em branco extras em torno da imagem */
+  margin: 0 auto; /* Centraliza horizontalmente */
+`;
+
+const StyledImgDel = styled.img`
+  width: 88px;
+  height: 132px;
   display: block; /* Remove espaços em branco extras em torno da imagem */
   margin: 0 auto; /* Centraliza horizontalmente */
 `;
@@ -101,7 +110,8 @@ export default class PacienteCrud extends Component {
     cidadePaciente: "",
     resVerifica: false,
     newPaciente: false,
-    crudMode: "",
+    crudMode: "add",
+    modalTitle: "",
   };
 
   componentWillMount() {
@@ -130,6 +140,7 @@ export default class PacienteCrud extends Component {
   }
 
   salvaDados() {
+    console.log("Dados: ", this.state.paciente);
     const paciente = this.state.paciente;
     const method = paciente.id ? "put" : "post";
     const url = paciente.id ? `${baseUrl}/${paciente.id}` : baseUrl;
@@ -137,9 +148,10 @@ export default class PacienteCrud extends Component {
       const list = this.getUpdatedList(resp.data);
       this.setState({ paciente: initialState.paciente, list });
     });
-    this.setState({ stageBasic: !this.state.stageBasic });
-    this.setState({ mostraCadastrar: !this.state.mostraCadastrar });
-    this.setState({ mostraLista: !this.state.mostraLista });
+    this.handleCloseModal();
+    //this.setState({ stageBasic: !this.state.stageBasic });
+    //this.setState({ mostraCadastrar: !this.state.mostraCadastrar });
+    //this.setState({ mostraLista: !this.state.mostraLista });
   }
 
   getUpdatedList(paciente, add = true) {
@@ -196,12 +208,13 @@ export default class PacienteCrud extends Component {
             className="btn btn-primary mx-2"
             onClick={() =>
               this.setState({
-                stageBasic: !this.state.stageBasic,
+                stageBasic: true,
                 //mostraLista: !this.state.mostraLista,
                 //mostraCadastrar: !this.state.mostraCadastrar,
-                newPaciente: !this.state.newPaciente,
+                //newPaciente: !this.state.newPaciente,
                 showModal: true,
-                crudMode: 'add',
+                crudMode: "add",
+                modalTitle: "",
               })
             }
           >
@@ -234,7 +247,6 @@ export default class PacienteCrud extends Component {
   renderForm() {
     return (
       <div className="form">
-        {/* {this.state.mostraCadastrar ? this.botaoCadastro() : ""} */}
         {this.state.stageBasic || this.state.stageContact ? (
           <div className="row">
             <div className="col-12">
@@ -243,8 +255,8 @@ export default class PacienteCrud extends Component {
                   className="mx-2"
                   onClick={() =>
                     this.setState({
-                      stageBasic: !this.state.stageBasic,
-                      stageContact: !this.state.stageContact,
+                      stageBasic: true,
+                      stageContact: false,
                     })
                   }
                 >
@@ -254,8 +266,8 @@ export default class PacienteCrud extends Component {
                   className="mx-2"
                   onClick={() =>
                     this.setState({
-                      stageBasic: !this.state.stageBasic,
-                      stageContact: !this.state.stageContact,
+                      stageBasic: false,
+                      stageContact: true,
                     })
                   }
                 >
@@ -272,8 +284,8 @@ export default class PacienteCrud extends Component {
           <div className="row">
             <div className="col-12">
               <div className="form-group">
-                <label className="mx-2">Informações básicas </label>
-                <label className="mx-2">___________________ </label>
+                {/* <label className="mx-2">Informações básicas </label>
+                <label className="mx-2">___________________ </label> */}
               </div>
             </div>
 
@@ -371,7 +383,14 @@ export default class PacienteCrud extends Component {
                   placeholder="Digite"
                 >
                   <option selected>Sem filtro</option>
-                  <option>...</option>
+                  <option>masculino</option>
+                  <option>feminino</option>
+                  <option>transgênero</option>
+                  <option>gênero neutro</option>
+                  <option>não-binário</option>
+                  <option>agênero</option>
+                  <option>pangênero</option>
+                  <option>outro</option>
                 </select>
               </div>
             </div>
@@ -387,7 +406,11 @@ export default class PacienteCrud extends Component {
                   placeholder="Digite"
                 >
                   <option selected>Sem filtro</option>
-                  <option>...</option>
+                  <option>solteiro</option>
+                  <option>casado</option>
+                  <option>separado</option>
+                  <option>divorciado</option>
+                  <option>viúvo</option>
                 </select>
               </div>
             </div>
@@ -398,7 +421,7 @@ export default class PacienteCrud extends Component {
                 <textarea
                   type="text"
                   className="form-control"
-                  name="bairro"
+                  name="infoAdic"
                   value={this.state.paciente.infoAdic}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -418,8 +441,8 @@ export default class PacienteCrud extends Component {
           <div className="row">
             <div className="col-12">
               <div className="form-group">
-                <label className="mx-2">Contato </label>
-                <label className="mx-2">_______ </label>
+                {/* <label className="mx-2">Contato </label>
+                <label className="mx-2">_______ </label> */}
               </div>
             </div>
 
@@ -429,7 +452,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="codCliente"
+                  name="cep"
                   value={this.state.paciente.cep}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -442,7 +465,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="codCliente"
+                  name="cidade"
                   value={this.state.paciente.cidade}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -457,7 +480,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="nomeCliente"
+                  name="uf"
                   value={this.state.paciente.uf}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -471,7 +494,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="dataNascimento"
+                  name="endereco"
                   value={this.state.paciente.endereco}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -484,7 +507,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="numEnde"
+                  name="numero"
                   value={this.state.paciente.numero}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -512,7 +535,7 @@ export default class PacienteCrud extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  name="bairro"
+                  name="complemento"
                   value={this.state.paciente.complemento}
                   onChange={(e) => this.updateField(e)}
                   placeholder="Digite"
@@ -536,10 +559,10 @@ export default class PacienteCrud extends Component {
                 onClick={() => {
                   this.state.stageBasic
                     ? this.setState({
-                        stageBasic: !this.state.stageBasic,
-                        stageContact: !this.state.stageContact,
+                        stageBasic: false,
+                        stageContact: true,
                       })
-                    : (e) => this.salvaDados(e);
+                    : this.salvaDados();
                 }}
               >
                 {this.state.stageContact ? "Salvar" : "Próximo"}
@@ -548,8 +571,6 @@ export default class PacienteCrud extends Component {
           ) : (
             <div></div>
           )}
-          {this.state.mostraLista ? this.renderTable() : ""}
-          {this.state.mostraListaCidades ? this.renderTableCidades() : ""}
         </div>
       </div>
     );
@@ -557,8 +578,35 @@ export default class PacienteCrud extends Component {
   renderDel() {
     return (
       <div className="form">
-        {/* {this.state.mostraCadastrar ? this.botaoCadastro() : ""} */}
-        {this.state.stageBasic || this.state.stageContact ? (
+        <div className="col-12">
+          <div className="text-center">
+            <StyledImgDel src={deleteImage} alt="Deletar" />
+            <label className="text-center mt-5 my-1">
+              Tem certeza que deseja excluir o paciente selecionado ?
+            </label>
+            <label className="text-center fw-bold my-4">
+              Essa ação não poderá ser desfeita.
+            </label>
+          </div>
+          <div className="row">
+            <hr />
+            <div className="col-12 d-flex justify-content-end">
+              <button
+                className="btn btn-outline-primary mx-3"
+                onClick={() => { this.handleCloseModal()}}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => { this.remove(this.state.paciente)}}
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+        {/*  {this.state.stageBasic || this.state.stageContact ? (
           <div className="row">
             <div className="col-12">
               <div className="form-group">
@@ -589,9 +637,9 @@ export default class PacienteCrud extends Component {
           </div>
         ) : (
           ""
-        )}
+        )} */}
 
-        {this.state.stageBasic ? (
+        {/* {this.state.stageBasic ? (
           <div className="row">
             <div className="col-12">
               <div className="form-group">
@@ -735,9 +783,9 @@ export default class PacienteCrud extends Component {
           </div>
         ) : (
           ""
-        )}
+        )} */}
 
-        {this.state.stageContact ? (
+        {/*  {this.state.stageContact ? (
           <div className="row">
             <div className="col-12">
               <div className="form-group">
@@ -849,7 +897,7 @@ export default class PacienteCrud extends Component {
           </div>
         ) : (
           ""
-        )}
+        )} */}
 
         <div className="row">
           {this.state.stageBasic || this.state.stageContact ? (
@@ -872,8 +920,8 @@ export default class PacienteCrud extends Component {
           ) : (
             <div></div>
           )}
-          {this.state.mostraLista ? this.renderTable() : ""}
-          {this.state.mostraListaCidades ? this.renderTableCidades() : ""}
+          {/* {this.state.mostraLista ? this.renderTable() : ""} */}
+          {/* {this.state.mostraListaCidades ? this.renderTableCidades() : ""} */}
         </div>
       </div>
     );
@@ -886,16 +934,21 @@ export default class PacienteCrud extends Component {
     const listaPacientes = this.state.list;
     for (let i = 0; i < listaPacientes.length; ++i) {
       if (novoCod === listaPacientes[i].codPaciente) {
-        this.state.resVerifica = false;
+        this.setState({ resVerifica: false });
+
+        //this.state.resVerifica = false;
         i = listaPacientes.length;
         window.alert("Existe outro paciente com esse código");
-      } else this.state.resVerifica = true;
+      }
+      //else this.state.resVerifica = true;
+      else this.setState({ resVerifica: false });
     }
     this.save();
   }
 
   load(paciente) {
     this.setState({ crudMode: "edit" });
+    this.setState({ modalTitle: "" });
 
     const listaCidades = this.state.listCidades;
 
@@ -907,10 +960,11 @@ export default class PacienteCrud extends Component {
     const cidadePaciente = listaCidades.filter(cidadeDoPaciente);
     cidadePaciente.forEach((e) => {
       e;
-      this.state.cidadePaciente = e;
+      this.setState({ cidadePaciente: e });
+      //this.state.cidadePaciente = e;
     });
 
-    this.setState({ stageBasic: !this.state.stageBasic }),
+    this.setState({ stageBasic: true }),
       this.setState({ newPaciente: false }),
       this.setState({ mostraLista: false }),
       //this.setState({ mostraCadastrar: false }),
@@ -919,7 +973,8 @@ export default class PacienteCrud extends Component {
   }
 
   loadCidade(cidade) {
-    this.state.cidadePaciente = cidade;
+    this.setState({ cidadePaciente: cidade });
+    //this.state.cidadePaciente = cidade;
     this.setState({
       stageBasic: !this.state.stageBasic,
       mostraListaCidades: !this.state.mostraListaCidades,
@@ -936,7 +991,9 @@ export default class PacienteCrud extends Component {
     });
   }
   modalDelet(paciente) {
+    this.setState({ paciente });
     this.setState({ crudMode: "delet" });
+    this.setState({ modalTitle: "Excluir paciente ?" });
     this.handleOpenModal();
     /* axios.delete(`${baseUrl}/${paciente.id}`).then((resp) => {
       const list = this.getUpdatedList(paciente, false);
@@ -966,23 +1023,21 @@ export default class PacienteCrud extends Component {
         {this.state.mostraCadastrar ? this.botaoCadastro() : ""}
 
         <table className="table mt-3 mx-5">
-        <thead>
-          <tr>
-            <th scope="col">Nome</th>
-            <th scope="col">CPF</th>
-            <th scope="col">Data de Nascimento</th>
-            <th scope="col">Email</th>
-            <th scope="col">Cidade</th>
-            <th scope="col">Ações</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>{this.renderRows()}</tbody>
-      </table>
-
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Data de Nascimento</th>
+              <th scope="col">Email</th>
+              <th scope="col">Cidade</th>
+              <th scope="col">Ações</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>{this.renderRows()}</tbody>
+        </table>
       </div>
-      
     );
   }
 
@@ -1041,11 +1096,17 @@ export default class PacienteCrud extends Component {
                   show={this.state.showModal}
                   onHide={this.handleCloseModal}
                 >
-                  <Modal.Header closeButton></Modal.Header>
+                  <Modal.Header closeButton>
+                    <Modal.Title>{this.state.modalTitle}</Modal.Title>
+                  </Modal.Header>
                   <Modal.Body>
                     {this.state.crudMode === "add" ? this.renderForm() : ""}
                     {this.state.crudMode === "edit" ? this.renderForm() : ""}
                     {this.state.crudMode === "delet" ? this.renderDel() : ""}
+                    {this.state.crudMode === "delet"
+                      ? //<StyledImgDel src={deleteImage} alt="Deletar"/>
+                        ""
+                      : ""}
                   </Modal.Body>
                 </Modal>
               </StyledPage>
