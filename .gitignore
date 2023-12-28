@@ -17,7 +17,11 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.json base.txt
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.jsonbase
+.gitignore
+.gitignore

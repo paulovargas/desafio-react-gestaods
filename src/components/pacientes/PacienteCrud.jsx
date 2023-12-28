@@ -34,23 +34,19 @@ const StyledSearch = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
-  padding: 5px;
+  width: auto;
+  height: 40px;
 
   input {
     border: none;
     outline: none;
     margin-left: 15px;
   }
-  //display: flex;
-  //flex-direction: row;
-  //justify-content: center;
-  //justify-items: center;
-  //align-content: center;
-  //border: 1px solid #ccc;
-  //margin-right: 70px;
-  //border-radius: 5%;
-  //margin-left: 10px;
-  //padding: 5px;
+  
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 `;
 
 /* const StyledInput = styled.input`
@@ -303,7 +299,7 @@ export default class PacienteCrud extends Component {
             <div className="col-md-6 my-3">
               <label htmlFor="">Listagem de pacientes</label>
             </div>
-            <div className="col-md-6 d-grid d-md-flex justity-content-end">
+            <div className="col-md-6 d-grid d-md-flex justity-content-end align-items-center">
               <StyledSearch>
                 <FontAwesomeIcon icon={faSearch} style={{ marginLeft: '15px' }} />
                 <input
