@@ -13,11 +13,8 @@ import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import avatar from "../../assets/imgs/avatar.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRightArrowLeft,
-  faPlus,
-  faSearch,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { format } from "date-fns";
 
 const headerProps = {
   list: [],
@@ -46,12 +43,21 @@ const StyledSearch = styled.div`
     outline: none;
     margin-left: 15px;
   }
-
+  
   &:focus {
     outline: none !important;
     box-shadow: none !important;
   }
 `;
+
+/* const StyledInput = styled.input`
+  border: none;
+  outline: none;
+  justify-content: end;
+  margin-left: 10px;
+  justify-items: center;
+  align-itens: center;
+`; */
 
 const StyledModal = styled.div`
   width: auto;
@@ -62,7 +68,7 @@ const StyledModal = styled.div`
 `;
 
 const StyledModalEdit = styled.div`
-  display: ${(props) => (props.isVisible ? "block" : "none")};
+  display: ${props => (props.isVisible ? 'block' : 'none')};
   width: auto;
   top: 373px;
   left: 1424px;
@@ -71,6 +77,7 @@ const StyledModalEdit = styled.div`
   border: 1px solid #ccc;
   background-color: white;
   align: center;
+
 `;
 
 const StyledLogo = styled.img`
@@ -90,7 +97,6 @@ const StyledImgDel = styled.img`
 const StyledContainer = styled.div`
   justify-content: center;
   background: white;
-  height: auto;
 `;
 
 const StyledTable = styled.div`
@@ -192,7 +198,24 @@ export default class PacienteCrud extends Component {
     labelContact: "",
     basicBold: "bold",
     contactBold: "",
+    modalOpcoes: false,
+    linhaSelecionada: null,
   };
+
+  handleOutsideClick = (event) => {
+    const modal = document.getElementById("seu-id-do-modal");
+    if (modal && !modal.contains(event.target)) {
+      this.setState({ linhaSelecionada: null, modalOpcoes: false });
+    }
+  };
+  
+  componentDidMount() {
+    document.addEventListener("click", this.handleOutsideClick, false);
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleOutsideClick, false);
+  }
 
   searchCep = async () => {
     const { cep } = this.state.paciente;
@@ -233,12 +256,13 @@ export default class PacienteCrud extends Component {
   };
 
   handleCloseModal = () => {
-    this.setState({ showModal: false });
     this.setState({
+      showModal: false,
       labelBasic: "#510972",
       labelContact: "",
       basicBold: "bold",
       contactBold: "",
+      modalOpcoes: !this.state.modalOpcoes,
     });
     this.clear();
   };
@@ -274,7 +298,7 @@ export default class PacienteCrud extends Component {
     paciente[event.target.name] = event.target.value;
     this.setState({ paciente });
   }
-
+  
   updateProgress = (field, val) => {
     this.setState({ [field]: val });
   };
@@ -309,36 +333,33 @@ export default class PacienteCrud extends Component {
             </div>
             <div className="col-md-6 d-grid d-md-flex justity-content-end align-items-center">
               <StyledSearch>
-                <FontAwesomeIcon
-                  icon={faSearch}
-                  style={{ marginLeft: "15px" }}
-                />
+                <FontAwesomeIcon icon={faSearch} style={{ marginLeft: '15px' }} />
                 <input
-                  type="text"
-                  className="form-control border-0 my-3"
-                  value={this.pesqPaciente}
-                  onChange={(e) => this.setBusca(e.target.value)}
-                  placeholder="Pesquisar"
-                />
-              </StyledSearch>
+                type="text"
+                className="form-control border-0 my-3"
+                value={this.pesqPaciente}
+                onChange={(e) => this.setBusca(e.target.value)}
+                placeholder="Pesquisar"
+              />               
+              </StyledSearch>              
               <div className="d-flex justify-content-between">
-                <button
-                  className="btn btn-primary mx-3 my-3"
-                  onClick={() =>
-                    this.setState({
-                      stageBasic: true,
-                      stageContact: false,
-                      showModal: true,
-                      crudMode: "add",
-                      modalTitle: "",
-                      newPaciente: true,
-                    })
-                  }
-                >
-                  <FontAwesomeIcon icon={faPlus} className="mx-2" />
-                  Adicionar paciente
-                </button>
-              </div>
+              <button
+                className="btn btn-primary mx-3 my-3"
+                onClick={() =>
+                  this.setState({
+                    stageBasic: true,
+                    stageContact: false,
+                    showModal: true,
+                    crudMode: "add",
+                    modalTitle: "",
+                    newPaciente: true,
+                  })
+                }
+              >
+                <FontAwesomeIcon icon={faPlus} className="mx-2"/>
+                Adicionar paciente
+              </button>
+              </div>              
             </div>
           </div>
         </div>
@@ -782,13 +803,13 @@ export default class PacienteCrud extends Component {
   }
 
   load(paciente) {
-    this.setState({ crudMode: "edit" });
-    this.setState({ modalTitle: "" });
+    this.setState({ crudMode: "edit" }),
+    this.setState({ modalTitle: "" }),
     this.setState({ stageBasic: true }),
-      this.setState({ stageContact: false }),
-      this.setState({ newPaciente: false }),
-      this.setState({ mostraLista: false }),
-      this.setState({ paciente });
+    this.setState({ stageContact: false }),
+    this.setState({ newPaciente: false }),
+    this.setState({ mostraLista: false }),
+    this.setState({ paciente });
 
     const listaCidades = this.state.listCidades;
 
@@ -797,9 +818,7 @@ export default class PacienteCrud extends Component {
         return value;
       }
     }
-
     const cidadePaciente = listaCidades.filter(cidadeDoPaciente);
-
     cidadePaciente.forEach((e) => {
       e;
       this.setState({ cidadePaciente: e });
@@ -810,8 +829,8 @@ export default class PacienteCrud extends Component {
 
   modalOption(pacienteId) {
     this.setState({ linhaSelecionada: pacienteId }),
-      this.setState({ modalOpcoes: !this.state.modalOpcoes });
-  }
+    this.setState({ modalOpcoes: !this.state.modalOpcoes });
+    }
 
   loadCidade(cidade) {
     this.setState({ cidadePaciente: cidade });
@@ -855,90 +874,46 @@ export default class PacienteCrud extends Component {
   renderTable() {
     return (
       <div className="table-responsive">
+
         {this.state.mostraCadastrar ? this.botaoCadastro() : ""}
 
-        <table
-          className="table"
-          onClick={() =>
-            this.setState({ modalOpcoes: !this.state.modalOpcoes })
-          }
-        >
+        <table className="table">
           <thead>
+          <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>           
             <tr>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-            </tr>
-            <tr>
-              <th className="d-none d-md-table-cell fw-bold" scope="col">
+              <th className="d-none d-md-table-cell fw-bold" scope="col"
+              onClick={() => this.setState({ modalOpcoes: !this.state.modalOpcoes })}
+              >
                 Nome
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
-
+              
               <th className="d-none d-md-table-cell fw-bold" scope="col">
                 CPF
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
               <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Data de Nascimento
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
               <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Email
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
               <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Cidade
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
               <th className="d-none d-md-table-cell fw-bold" scope="col">
                 Ações
-                <FontAwesomeIcon
-                  icon={faArrowRightArrowLeft}
-                  style={{
-                    transform: "rotate(90deg)",
-                    marginLeft: 10,
-                    color: "blue",
-                  }}
-                />
+                <FontAwesomeIcon icon={faArrowRightArrowLeft} style={{ transform: 'rotate(90deg)', marginLeft: 10, color: 'blue' }}/>                
               </th>
             </tr>
           </thead>
@@ -951,51 +926,56 @@ export default class PacienteCrud extends Component {
   renderRows() {
     return this.state.list.map((paciente) => {
       return (
-        <tr key={paciente.id} className="my-0">
+        <tr key={paciente.id}>
           <td className="d-sm-table-cell">{paciente.paciente}</td>
           <td className="d-none d-md-table-cell">{paciente.cpf}</td>
-          <td className="d-none d-md-table-cell">{paciente.dataNascimento}</td>
+          
+          {/* <td className="d-none d-md-table-cell">{paciente.dataNascimento}</td> */}
+          <td className="d-none d-md-table-cell">{format(new Date(paciente.dataNascimento), 'dd/MM/yyyy')}</td>
           <td className="d-none d-md-table-cell">{paciente.email}</td>
           <td className="d-none d-md-table-cell">{paciente.cidade}</td>
 
-          <td style={{ position: "relative" }} className="d-md-table-cell">
+          <td style={{ position: 'relative' }}>
             <p onClick={() => this.modalOption(paciente.id)}>...</p>
             <StyledModalEdit
-              isVisible={
-                this.state.modalOpcoes &&
-                this.state.linhaSelecionada === paciente.id
-              }
-              style={{
-                alignContent:"center",
-                position: "absolute",
-                overflow: "visible",
-                top: "-20px", // Ajuste conforme necessário (um valor negativo move o modal para cima)
-                left: "0",
-                height: "85px", // Ajuste conforme necessário
-                zIndex: "1", // Certifica-se de que o modal esteja acima da tabela
-              }}
+             isVisible={this.state.modalOpcoes && this.state.linhaSelecionada === paciente.id}
+             style={{
+              position: 'absolute',
+              overflow: 'visible',
+              alignContent: 'center',
+              top: '-10px', // Ajuste conforme necessário (um valor negativo move o modal para cima)
+              left: '0',
+              height: '85px', // Ajuste conforme necessário
+              zIndex: '1', // Certifica-se de que o modal esteja acima da tabela
+            
+            }}
+             >
+            <div 
+             className="d-flex flex-column"
+             //style={{ justifyItems: 'center' }}
             >
-              <div className="mt-3">
-                <p onClick={() => this.load(paciente)}>Editar</p>
-                <p onClick={() => this.modalDelet(paciente)}>Excluir</p>
-                {/* <button
-                  className="btn d-grid gap-2"
-                  style={{ textDecoration: "none" }}
-                  onClick={() => this.load(paciente)}
-                >
-                  Editar
-                </button>
-                <hr />
+            <button
+              className="btn btn-link"
+             style={{ textDecoration: 'none', alignContent: 'center'}}
+              onClick={() => this.load(paciente)}
+            >
+              Editar
+              {/* <i className="fa fa-pencil"></i> */}
+            </button>
+            <hr />
 
-                <button
-                  className="btn d-grid gap-2"
-                  style={{ textDecoration: "none" }}
-                  onClick={() => this.modalDelet(paciente)}
-                >
-                  Excluir
-                </button> */}
-              </div>
+            <button
+              className="btn btn-link"
+             style={{ textDecoration: 'none' }}
+              onClick={() => this.modalDelet(paciente)}
+            >
+              Excluir
+              {/* <i className="fa fa-trash"></i> */}
+            </button>
+            </div> 
+
             </StyledModalEdit>
+                       
           </td>
         </tr>
       );
@@ -1017,11 +997,11 @@ export default class PacienteCrud extends Component {
   render() {
     return (
       <Main {...headerProps}>
-        <Flex justifyContent="center" bg="#F6F6F6">
-          <Box flexDirection={"column"} minHeight={665} width={1032}>
+        <Flex justifyContent="center" p={4} bg="#F6F6F6" minHeight="100vh">
+          <Box flexDirection={"column"} minHeight={825} width={1032}>
             <StyledLogo src={logoImage} alt="Logo" />
             <StyledContainer>
-              <StyledPage>
+              <StyledPage /* onClick={this.setState({ linhaSelecionada: true })} */>
                 <StyledTable>{this.renderTable()}</StyledTable>
                 <StyledModal>
                   <Modal
@@ -1030,9 +1010,7 @@ export default class PacienteCrud extends Component {
                     dialogClassName="modal-lg"
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title color="#510972">
-                        {this.state.modalTitle}
-                      </Modal.Title>
+                      <Modal.Title color="#510972">{this.state.modalTitle}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       {this.state.crudMode === "add" ? this.renderForm() : ""}
