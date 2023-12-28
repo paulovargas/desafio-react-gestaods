@@ -71,6 +71,18 @@ const StyledModalEdit = styled.div`
   border: 1px solid #ccc;
   background-color: white;
   align: center;
+
+  .btn-transparent {
+    width: 100%;
+    --bs-btn-border-radius: none;
+    color: inherit;
+    background-color: transparent;
+  }
+
+  .btn-transparent:hover {
+    transition: box-shadow 0.3s ease;
+    --bs-btn-hover-bg: #cadbf6;
+  }
 `;
 
 const StyledLogo = styled.img`
@@ -858,7 +870,7 @@ export default class PacienteCrud extends Component {
         {this.state.mostraCadastrar ? this.botaoCadastro() : ""}
 
         <table
-          className="table"
+          className="table mb-5"
           onClick={() =>
             this.setState({ modalOpcoes: !this.state.modalOpcoes })
           }
@@ -971,29 +983,30 @@ export default class PacienteCrud extends Component {
                 overflow: "visible",
                 top: "-20px", // Ajuste conforme necessário (um valor negativo move o modal para cima)
                 left: "0",
-                height: "85px", // Ajuste conforme necessário
+                height: "70px", // Ajuste conforme necessário
                 zIndex: "1", // Certifica-se de que o modal esteja acima da tabela
               }}
             >
               <div className="mt-3">
-                <p onClick={() => this.load(paciente)}>Editar</p>
-                <p onClick={() => this.modalDelet(paciente)}>Excluir</p>
-                {/* <button
-                  className="btn d-grid gap-2"
-                  style={{ textDecoration: "none" }}
+                <div className="btn-transparent btn-outline-primary btn-no-radius">
+                <div 
+                  className="btn btn-link btn-no-radius"
+                  style={{ textDecoration: 'none', width: '100%'}}                  
                   onClick={() => this.load(paciente)}
                 >
-                  Editar
-                </button>
-                <hr />
-
-                <button
-                  className="btn d-grid gap-2"
-                  style={{ textDecoration: "none" }}
+                  Editar 
+                </div>
+                </div>
+                
+                <div className="btn-transparent btn-outline-primary btn-no-radius">
+                <div
+                  className="btn btn-link btn-no-radius"
+                  style={{ textDecoration: 'none', width: '100%'}}
                   onClick={() => this.modalDelet(paciente)}
-                >
-                  Excluir
-                </button> */}
+                  >
+                    Excluir
+                  </div>
+                </div>              
               </div>
             </StyledModalEdit>
           </td>
