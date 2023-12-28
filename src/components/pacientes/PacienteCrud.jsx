@@ -72,9 +72,13 @@ const StyledModalEdit = styled.div`
   background-color: white;
   align: center;
 
+  .modalAcoes{
+    --bs-btn-border-radius: none;
+  }
+
   .btn-transparent {
     width: 100%;
-    --bs-btn-border-radius: none;
+    //--bs-btn-border-radius: none;
     color: inherit;
     background-color: transparent;
   }
@@ -987,10 +991,10 @@ export default class PacienteCrud extends Component {
                 zIndex: "1", // Certifica-se de que o modal esteja acima da tabela
               }}
             >
-              <div className="mt-3">
-                <div className="btn-transparent btn-outline-primary btn-no-radius">
+              <div className="">
+                <div className="btn-transparent btn-outline-primary">
                 <div 
-                  className="btn btn-link btn-no-radius"
+                  className="btn btn-link modalAcoes"
                   style={{ textDecoration: 'none', width: '100%'}}                  
                   onClick={() => this.load(paciente)}
                 >
@@ -998,9 +1002,9 @@ export default class PacienteCrud extends Component {
                 </div>
                 </div>
                 
-                <div className="btn-transparent btn-outline-primary btn-no-radius">
+                <div className="btn-transparent btn-outline-primary">
                 <div
-                  className="btn btn-link btn-no-radius"
+                  className="btn btn-link modalAcoes"
                   style={{ textDecoration: 'none', width: '100%'}}
                   onClick={() => this.modalDelet(paciente)}
                   >
