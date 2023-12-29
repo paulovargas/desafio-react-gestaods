@@ -6,28 +6,7 @@ Projeto de gestão desenvolvido em React para desafio de Desenvolvedor.
 
 A estrutura do seu projeto é organizada da seguinte forma:
 
-desafio-react-gestaods/
-├── public/
-│ ├── index.html
-│ └── ...
-├── src/
-│ ├── assets/
-│ │ └── igms/
-│ ├── components/
-│ │ ├── pacientes/
-│ │ │ ├── PacienteCrud.jsx
-│ │ │ └── PacienteCrud.css
-│ │ └── template/
-│ │ ├── Main.jsx
-│ │ └── Main.css
-│ ├── main/
-│ │ ├── App.css
-│ │ ├── App.jsx
-│ │ └── Routes.jsx
-│ └── ...
-├── .gitignore
-├── package.json
-└── ...
+![Estrutura do Projeto](src/assets/imgs/estrutura.jpeg)
 
 
 ## Pré-requisitos
