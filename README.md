@@ -1,6 +1,6 @@
 # Desafio React - Gestão DS
 
-Projeto de gestão desenvolvido em React para o desafio da disciplina de Desenvolvimento de Software da Universidade XYZ.
+Projeto de gestão desenvolvido em React para desafio de Desenvolvedor.
 
 ## Estrutura do Projeto
 
