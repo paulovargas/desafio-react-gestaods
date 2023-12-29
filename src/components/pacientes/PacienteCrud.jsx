@@ -19,14 +19,11 @@ import {
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 
-const headerProps = {
-  list: [],
-};
-
 const StyledHead = styled.div`
   width: auto;
 `;
 
+//Define os estilos do campo de busca de pacientes
 const StyledSearch = styled.div`
   display: flex;
   align-items: center;
@@ -46,6 +43,7 @@ const StyledSearch = styled.div`
   }
 `;
 
+//Define os estilos globais do modal
 const StyledModal = styled.div`
   width: auto;
   height: auto;
@@ -54,6 +52,7 @@ const StyledModal = styled.div`
   border-radius: 10px;
 `;
 
+//Define os estilos globais do modal de opções na tabela
 const StyledModalEdit = styled.div`
   display: ${(props) => (props.isVisible ? "block" : "none")};
   width: auto;
@@ -81,6 +80,7 @@ const StyledModalEdit = styled.div`
   }
 `;
 
+//Define os estilos do logo
 const StyledLogo = styled.img`
   width: 230px;
   height: 185px;
@@ -88,6 +88,7 @@ const StyledLogo = styled.img`
   margin: 0 auto;
 `;
 
+//Define os estilos da imagem dentro do modal de exclusão de paciente
 const StyledImgDel = styled.img`
   width: 88px;
   height: 132px;
@@ -95,20 +96,22 @@ const StyledImgDel = styled.img`
   margin: 0 auto;
 `;
 
+//Define os estilos globais do container do conteúdo
 const StyledContainer = styled.div`
   justify-content: center;
   background: white;
   height: auto;
 `;
 
+//Define os estilos globais da tabela 
 const StyledTable = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin: 25px;
-  //margin-right: 70px;
 `;
 
+//Define o estilo da imagem de usuário na aba informações básicas
 const StyledAvatar = styled.img`
   width: 67.62px;
   height: 67.62px;
@@ -117,6 +120,7 @@ const StyledAvatar = styled.img`
   justify-content: center;
 `;
 
+//Define o estilo do fundo da imagem de usuário
 const StyledElipse = styled.div`
   margin-top: 15px;
   margin-bottom: 15px;
@@ -131,10 +135,15 @@ const StyledElipse = styled.div`
   background: #d9d9d9;
 `;
 
+//Define os estilos globais do conteúdo apresentado em geral
 const StyledPage = styled.div``;
 
+
+//Define a url da api utilizada para salvar os dados da aplicação
 const baseUrl = "https://6588390d90fa4d3dabf9a00f.mockapi.io/patients";
 
+
+//Define o estado inicial da aplicação
 const initialState = {
   paciente: {
     id: parseInt(""),
@@ -180,7 +189,10 @@ const initialState = {
   listCidades: [],
 };
 
+//Define o corpo aplicação
 export default class PacienteCrud extends Component {
+
+  //Inicializa o estado da aplicação
   state = {
     ...initialState,
     stageBasic: false,
@@ -202,6 +214,7 @@ export default class PacienteCrud extends Component {
     contactBold: "",
   };
 
+  //Função que faz a consulta do cep na api indicada no teste
   searchCep = async () => {
     const { cep } = this.state.paciente;
 
@@ -229,16 +242,19 @@ export default class PacienteCrud extends Component {
     }
   };
 
+  //Executa a busca de dados na api ao alterar o estado 
   componentWillMount() {
     axios(baseUrl).then((resp) => {
       this.setState({ list: resp.data });
     });
   }
 
+  //Função que abre o modal 
   handleOpenModal = () => {
     this.setState({ showModal: true });
   };
 
+  //Função que fecha o modal e atualiza os estados de controle da aplicação
   handleCloseModal = () => {
     this.setState({ showModal: false });
     this.setState({
@@ -250,18 +266,16 @@ export default class PacienteCrud extends Component {
     this.clear();
   };
 
+  //Função que limpa os campos do formulário
   clear() {
     this.setState({ paciente: initialState.paciente });
   }
 
-  save() {
-    this.state.resVerifica ? this.salvaDados() : "";
-  }
-
+  //Função que envia os dados para a api sendo novo cadastro ou cadastro quando atualizad
   salvaDados() {
     console.log("Dados: ", this.state.paciente);
     const paciente = this.state.paciente;
-    const method = paciente.id ? "put" : "post";
+    const method = paciente.id ? "put" : "post"; // Aqui verifica se o paciente está sendo atualizado ou é cadastro novo
     const url = paciente.id ? `${baseUrl}/${paciente.id}` : baseUrl;
     axios[method](url, paciente).then((resp) => {
       const list = this.getUpdatedList(resp.data);
@@ -270,22 +284,21 @@ export default class PacienteCrud extends Component {
     this.handleCloseModal();
   }
 
+  //Função que atualiza a tabela durante a busca no campo "Pequisar"
   getUpdatedList(paciente, add = true) {
     const list = this.state.list.filter((t) => t.id !== paciente.id);
     if (add) list.unshift(paciente);
     return list;
   }
 
+  //Função que atualiza o estado "paciente"
   updateField(event) {
     const paciente = { ...this.state.paciente };
     paciente[event.target.name] = event.target.value;
     this.setState({ paciente });
   }
 
-  updateProgress = (field, val) => {
-    this.setState({ [field]: val });
-  };
-
+  //Função que busca o paciente preenchido no campo "Pesquisar"
   setBusca(e) {
     const pesqPaciente = e.toLowerCase();
     const listaPacientes = this.state.list;
@@ -293,8 +306,8 @@ export default class PacienteCrud extends Component {
     var pacientes = listaPacientes;
     function buscarPaciente(listaPacientes) {
       if (
-        listaPacientes.paciente.toLowerCase().includes(pesqPaciente) ||
-        listaPacientes.cpf.includes(pesqPaciente)
+        listaPacientes.paciente.toLowerCase().includes(pesqPaciente) || // Aqui é verificado se o nome do paciente existe
+        listaPacientes.cpf.includes(pesqPaciente) // Aqui é verificado se o cpf do paciente existe
       ) {
         return listaPacientes;
       }
@@ -306,7 +319,8 @@ export default class PacienteCrud extends Component {
     }
   }
 
-  botaoCadastro() {
+  //Função que rendeniza o cabeçalho da tabela
+  cabecalhoTabela() {
     return (
       <StyledHead>
         <div className="row col-12 mt-5 flex-md-row flex-md-column justify-content-center">
@@ -315,7 +329,7 @@ export default class PacienteCrud extends Component {
               <label htmlFor="">Listagem de pacientes</label>
             </div>
             <div className="col-md-6 d-grid d-md-flex justity-content-end align-items-center">
-              <StyledSearch>
+              <StyledSearch> {/* Mostra o campo "pesquisar" */}
                 <FontAwesomeIcon
                   icon={faSearch}
                   style={{ marginLeft: "15px" }}
@@ -353,29 +367,11 @@ export default class PacienteCrud extends Component {
     );
   }
 
-  buscaCidade() {
-    this.setState({
-      stageBasic: !this.state.stageBasic,
-      mostraListaCidades: !this.state.mostraListaCidades,
-    });
-    return (
-      <table className="table mt-4">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nome</th>
-          </tr>
-        </thead>
-
-        <tbody>{this.renderRows()}</tbody>
-      </table>
-    );
-  }
-
+  //Função que rendeniza o formulário adicionar / editar paciente
   renderForm() {
     return (
       <div className="form" style={{ maxWidth: "800px" }}>
-        {this.state.stageBasic || this.state.stageContact ? (
+        {this.state.stageBasic || this.state.stageContact ? ( // Condicional para definir se o formulário é basico ou de contato
           <div className="row">
             <div className="col-12 col-md-6">
               <div className="form-group">
@@ -425,7 +421,7 @@ export default class PacienteCrud extends Component {
           ""
         )}
 
-        {this.state.stageBasic ? (
+        {this.state.stageBasic ? (  // Condicional para definir se o formulário é basico ou de contato
           <div className="row">
             <div>
               <StyledElipse>
@@ -707,7 +703,7 @@ export default class PacienteCrud extends Component {
         )}
 
         <div className="row">
-          {this.state.stageBasic || this.state.stageContact ? (
+          {this.state.stageBasic || this.state.stageContact ? ( // Condicional para definir se o formulário é basico ou de contato
             <div className="col-12 d-flex justify-content-end mt-5 p-3">
               <button
                 className="btn btn-primary"
@@ -736,6 +732,7 @@ export default class PacienteCrud extends Component {
     );
   }
 
+  // Função que rendeniza os dados quando o modal está no estado para deletar paciente
   renderDel() {
     return (
       <div className="form">
@@ -775,59 +772,26 @@ export default class PacienteCrud extends Component {
     );
   }
 
-  verificaCodigo() {
-    const novoCod = this.state.paciente.codPaciente;
-    const listaPacientes = this.state.list;
-    for (let i = 0; i < listaPacientes.length; ++i) {
-      if (novoCod === listaPacientes[i].codPaciente) {
-        this.setState({ resVerifica: false });
-        i = listaPacientes.length;
-        window.alert("Existe outro paciente com esse código");
-      } else this.setState({ resVerifica: false });
-    }
-    this.save();
-  }
-
+  // Função que atualiza os estados para que o modal abra no modo edição de dados
   load(paciente) {
     this.setState({ crudMode: "edit" }),
-      this.setState({ modalTitle: "" }),
-      this.setState({ stageBasic: true }),
-      this.setState({ stageContact: false }),
-      this.setState({ newPaciente: false }),
-      this.setState({ mostraLista: false }),
-      this.setState({ paciente });
-
-    const listaCidades = this.state.listCidades;
-
-    function cidadeDoPaciente(value) {
-      if (value.id === paciente.cityId) {
-        return value;
-      }
-    }
-
-    const cidadePaciente = listaCidades.filter(cidadeDoPaciente);
-
-    cidadePaciente.forEach((e) => {
-      e;
-      this.setState({ cidadePaciente: e });
-    });
+    this.setState({ modalTitle: "" }),
+    this.setState({ stageBasic: true }),
+    this.setState({ stageContact: false }),
+    this.setState({ newPaciente: false }),
+    this.setState({ mostraLista: false }),
+    this.setState({ paciente });
 
     this.handleOpenModal();
   }
 
+  //Função que seta o paciente que será carregado no modal
   modalOption(pacienteId) {
     this.setState({ linhaSelecionada: pacienteId }),
       this.setState({ modalOpcoes: !this.state.modalOpcoes });
   }
 
-  loadCidade(cidade) {
-    this.setState({ cidadePaciente: cidade });
-    this.setState({
-      stageBasic: !this.state.stageBasic,
-      mostraListaCidades: !this.state.mostraListaCidades,
-    });
-  }
-
+  //Função que exclui o paciente selecionado
   remove(paciente) {
     axios.delete(`${baseUrl}/${paciente.id}`).then((resp) => {
       const list = this.getUpdatedList(paciente, false);
@@ -836,6 +800,7 @@ export default class PacienteCrud extends Component {
     this.handleCloseModal();
   }
 
+  //Função que define o modal para o modo de exclusão de paciente
   modalDelet(paciente) {
     this.setState({ paciente });
     this.setState({ crudMode: "delet" });
@@ -843,26 +808,11 @@ export default class PacienteCrud extends Component {
     this.handleOpenModal();
   }
 
-  renderTableCidades() {
-    return (
-      <table className="table mt-4">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Município</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-
-        <tbody>{this.renderRowsCidade()}</tbody>
-      </table>
-    );
-  }
-
+  //Função que rendeniza a tabela de pacientes na página
   renderTable() {
     return (
       <div className="table-responsive">
-        {this.state.mostraCadastrar ? this.botaoCadastro() : ""}
+        {this.state.mostraCadastrar ? this.cabecalhoTabela() : ""} {/* Condicional para mostra o cabeçalho da tabela */}
 
         <table
           className="table mb-5"
@@ -955,6 +905,7 @@ export default class PacienteCrud extends Component {
     );
   }
 
+  //Função que rendeniza a lista de pacientes na tabela
   renderRows() {
     return this.state.list.map((paciente) => {
       return (
@@ -1010,21 +961,10 @@ export default class PacienteCrud extends Component {
     });
   }
 
-  renderRowsCidade() {
-    return this.state.listCidades.map((cidade) => {
-      return (
-        <tr key={cidade.id} onClick={() => this.loadCidade(cidade)}>
-          <td>{cidade.codCidade}</td>
-          <td>{cidade.nomeCidade}</td>
-          <td>{cidade.uF}</td>
-        </tr>
-      );
-    });
-  }
-
+  //Função que rendeniza a página
   render() {
     return (
-      <Main {...headerProps}>
+      <Main >
         <Flex justifyContent="center" bg="#F6F6F6">
           <Box flexDirection={"column"} minHeight={665} width={1032}>
             <StyledLogo src={logoImage} alt="Logo" />
@@ -1043,9 +983,9 @@ export default class PacienteCrud extends Component {
                       </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                      {this.state.crudMode === "add" ? this.renderForm() : ""}
-                      {this.state.crudMode === "edit" ? this.renderForm() : ""}
-                      {this.state.crudMode === "delet" ? this.renderDel() : ""}
+                      {this.state.crudMode === "add" ? this.renderForm() : ""}  {/* Condicional que verifica se o modo é formulário é para novo paciente */}
+                      {this.state.crudMode === "edit" ? this.renderForm() : ""} {/* Condicional que verifica se o modo é formulário é para editar paciente */}
+                      {this.state.crudMode === "delet" ? this.renderDel() : ""} {/* Condicional que verifica se o modo é excluir paciente */}
                       {this.state.crudMode === "delet" ? "" : ""}
                     </Modal.Body>
                   </Modal>
