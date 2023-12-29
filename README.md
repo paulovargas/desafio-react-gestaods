@@ -4,7 +4,7 @@ Projeto de gestão desenvolvido em React para desafio de Desenvolvedor.
 
 ## Estrutura do Projeto
 
-A estrutura do seu projeto é organizada da seguinte forma:
+A estrutura do projeto é organizada da seguinte forma:
 
 ![Estrutura do Projeto](src/assets/imgs/estrutura.jpeg)
 
