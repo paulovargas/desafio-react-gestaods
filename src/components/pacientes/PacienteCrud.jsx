@@ -25,13 +25,6 @@ const headerProps = {
 
 const StyledHead = styled.div`
   width: auto;
-  //display: flex;
-  //flex-direction: row;
-  //justify-content: end;
-  //align-content: center;
-  //margin-right: 70px;
-  //padding: 30px;
-  //border: 1px solid #ccc;
 `;
 
 const StyledSearch = styled.div`
@@ -72,13 +65,12 @@ const StyledModalEdit = styled.div`
   background-color: white;
   align: center;
 
-  .modalAcoes{
+  .modalAcoes {
     --bs-btn-border-radius: none;
   }
 
   .btn-transparent {
     width: 100%;
-    //--bs-btn-border-radius: none;
     color: inherit;
     background-color: transparent;
   }
@@ -92,15 +84,15 @@ const StyledModalEdit = styled.div`
 const StyledLogo = styled.img`
   width: 230px;
   height: 185px;
-  display: block; /* Remove espaços em branco extras em torno da imagem */
-  margin: 0 auto; /* Centraliza horizontalmente */
+  display: block;
+  margin: 0 auto;
 `;
 
 const StyledImgDel = styled.img`
   width: 88px;
   height: 132px;
-  display: block; /* Remove espaços em branco extras em torno da imagem */
-  margin: 0 auto; /* Centraliza horizontalmente */
+  display: block;
+  margin: 0 auto;
 `;
 
 const StyledContainer = styled.div`
@@ -220,7 +212,6 @@ export default class PacienteCrud extends Component {
       if (!data.erro) {
         const { logradouro, bairro, localidade, uf } = data;
 
-        // Atualiza os campos de endereço no estado
         this.setState((prevState) => ({
           paciente: {
             ...prevState.paciente,
@@ -535,14 +526,14 @@ export default class PacienteCrud extends Component {
                   placeholder="Digite"
                 >
                   <option selected>Sem filtro</option>
-                  <option>masculino</option>
-                  <option>feminino</option>
-                  <option>transgênero</option>
-                  <option>gênero neutro</option>
-                  <option>não-binário</option>
-                  <option>agênero</option>
-                  <option>pangênero</option>
-                  <option>outro</option>
+                  <option value={'masculino'}>masculino</option>
+                  <option value={'feminino'}>feminino</option>
+                  <option value={'transgênero'}>transgênero</option>
+                  <option value={'gênero neutro'}>gênero neutro</option>
+                  <option value={'não-binário'}>não-binário</option>
+                  <option value={'agênero'}>agênero</option>
+                  <option value={'pangênero'}>pangênero</option>
+                  <option value={'outro'}>outro</option>
                 </select>
               </div>
             </div>
@@ -558,11 +549,11 @@ export default class PacienteCrud extends Component {
                   placeholder="Digite"
                 >
                   <option selected>Sem filtro</option>
-                  <option>solteiro</option>
-                  <option>casado</option>
-                  <option>separado</option>
-                  <option>divorciado</option>
-                  <option>viúvo</option>
+                  <option value={'solteiro'} >solteiro</option>
+                  <option value={'casado'} >casado</option>
+                  <option value={'separado'} >separado</option>
+                  <option value={'divorciado'} >divorciado</option>
+                  <option value={'viúvo'} >viúvo</option>
                 </select>
               </div>
             </div>
@@ -798,9 +789,9 @@ export default class PacienteCrud extends Component {
   }
 
   load(paciente) {
-    this.setState({ crudMode: "edit" });
-    this.setState({ modalTitle: "" });
-    this.setState({ stageBasic: true }),
+    this.setState({ crudMode: "edit" }),
+      this.setState({ modalTitle: "" }),
+      this.setState({ stageBasic: true }),
       this.setState({ stageContact: false }),
       this.setState({ newPaciente: false }),
       this.setState({ mostraLista: false }),
@@ -982,35 +973,35 @@ export default class PacienteCrud extends Component {
                 this.state.linhaSelecionada === paciente.id
               }
               style={{
-                alignContent:"center",
+                alignContent: "center",
                 position: "absolute",
                 overflow: "visible",
-                top: "-20px", // Ajuste conforme necessário (um valor negativo move o modal para cima)
+                top: "-20px",
                 left: "0",
-                height: "70px", // Ajuste conforme necessário
-                zIndex: "1", // Certifica-se de que o modal esteja acima da tabela
+                height: "70px",
+                zIndex: "1",
               }}
             >
-              <div className="">
+              <div>
                 <div className="btn-transparent btn-outline-primary">
-                <div 
-                  className="btn btn-link modalAcoes"
-                  style={{ textDecoration: 'none', width: '100%'}}                  
-                  onClick={() => this.load(paciente)}
-                >
-                  Editar 
+                  <div
+                    className="btn btn-link modalAcoes"
+                    style={{ textDecoration: "none", width: "100%" }}
+                    onClick={() => this.load(paciente)}
+                  >
+                    Editar
+                  </div>
                 </div>
-                </div>
-                
+
                 <div className="btn-transparent btn-outline-primary">
-                <div
-                  className="btn btn-link modalAcoes"
-                  style={{ textDecoration: 'none', width: '100%'}}
-                  onClick={() => this.modalDelet(paciente)}
+                  <div
+                    className="btn btn-link modalAcoes"
+                    style={{ textDecoration: "none", width: "100%" }}
+                    onClick={() => this.modalDelet(paciente)}
                   >
                     Excluir
                   </div>
-                </div>              
+                </div>
               </div>
             </StyledModalEdit>
           </td>
