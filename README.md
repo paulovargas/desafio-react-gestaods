@@ -45,7 +45,7 @@ Antes de começar, certifique-se de ter os seguintes requisitos instalados:
 
 ## Configuração
 
-Se o seu projeto requer configurações adicionais, inclua-as nesta seção.
+Não há configurações adicionais, caso prefira ver o projeto em execução sem baixa-lo está disponivel em https://paulovargas.github.io/desafio-react-gestaods/
 
 ## Como Executar
 
